@@ -1,36 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Склонение</title>
-    <script>
-        function decl() {
-    $.ajax({
-        url: '/index/' + $('#name').val(),
-        dataType: 'html'
-    }).done(function(data) {
-        $('#result').html(data)
-    });
-   }
-
-    </script>
 </head>
 <body>
-<form action="/index/">
-    <input type="text" name="fio" width="100%" placeholder="ФИО" th:value="${!decls.isEmpty()} ? ${decls[0].fio} : ''">
-    <input type="submit" value="Склонять">
-</form>
-<table>
-    <thead>
-    <tr>
-        <th>FIO</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="decl : ${decls}">
-        <td th:text="${decl.fio}"></td>
-    </tr>
-    </tbody>
-</table>
+<div>
+
+    <a href="/fio">Склонение ФИО</a> |
+    <a href="/office">Склонение отделов</a> |
+    <a href="/prof">Склонение профессий</a> |
+    <a href="/">Back to Index</a> |
+    <a href="/logout">Logout</a>
+</div>
 </body>
 </html>

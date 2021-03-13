@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Склонение</title>
+</head>
+<body>
+<form action="/prof/">
+    <input type="text" name="path" width="100%" placeholder="Путь к файлу" th:value="${path}">
+    <input type="submit" value="Склонять">
+</form>
+<table>
+    <thead>
+    <tr>
+        <th>Профессия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="decl : ${decls}">
+        <td th:text="${decl.fio}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

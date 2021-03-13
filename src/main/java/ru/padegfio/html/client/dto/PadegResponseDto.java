@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PadegFioResponseDto {
+public class PadegResponseDto {
 
     private final List<String> result;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public PadegFioResponseDto(@JsonProperty("result") List<String> result) {
+    public PadegResponseDto(@JsonProperty("result") List<String> result) {
         this.result = new ArrayList<>(result);
     }
 
