@@ -6,9 +6,13 @@ import ru.padegfio.html.client.dto.DeclinationType;
 import ru.padegfio.html.client.dto.PadegDto;
 import ru.padegfio.html.client.dto.PadegResponseDto;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 @Service
 public class PadegServiceImpl implements PadegService {
@@ -33,11 +37,12 @@ public class PadegServiceImpl implements PadegService {
     }
 
     @Override
-    public Map<String, List<PadegDto>> getDeclinationFromFile(String pathToFile, DeclinationType declinationType) {
-        FileReader fileReader;
+    public List<Map<String, List<PadegDto>>> getDeclinationFromFile(String pathToFile, DeclinationType declinationType, Integer quantityRepeat) {
+        BufferedReader reader;
         if (!StringUtils.hasText(pathToFile)) {
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
+        List<Map<String, List<PadegDto>>> result = new ArrayList<>();
         try {
             if (!pathToFile.endsWith(".txt")) {
                 if (!pathToFile.endsWith(File.separator)) {
@@ -45,36 +50,37 @@ public class PadegServiceImpl implements PadegService {
                 }
                 pathToFile += declinationType.getFileName();
             }
-            fileReader = new FileReader(pathToFile);
-            return getDeclinationFromFile(fileReader, declinationType);
-        } catch (FileNotFoundException e) {
-            return Collections.emptyMap();
+            reader = new BufferedReader(new FileReader(pathToFile));
+            if (quantityRepeat == null || quantityRepeat <= 0) {
+                quantityRepeat = 1;
+            }
+            List<String> lines = reader.lines().collect(Collectors.toList());
+            for (int i = 0; i < quantityRepeat; i++) {
+                result.add(getDeclinationFromFile(lines, declinationType));
+            }
+            return result;
+        } catch (IOException e) {
+            return result;
         }
     }
 
-    private Map<String, List<PadegDto>> getDeclinationFromFile(FileReader fileReader, DeclinationType declinationType) {
-        LineNumberReader lineNumberReader = new LineNumberReader(fileReader);
-        String line;
+    private Map<String, List<PadegDto>> getDeclinationFromFile(List<String> lines, DeclinationType declinationType) {
         Map<String, List<PadegDto>> result = new LinkedHashMap<>();
-        while (true) {
-            try {
-                if ((line = lineNumberReader.readLine()) == null) break;
-                List<PadegDto> decls = new ArrayList<>(6);
-                switch (declinationType) {
-                    case FIO:
-                        decls.addAll(getDeclination(line, padegClient::getFioDecl));
-                        break;
-                    case DEPARTMENT:
-                        decls.addAll(getDeclination(line, padegClient::getOfficeDecl));
-                        break;
-                    case PROFESSION:
-                        decls.addAll(getDeclination(line, padegClient::getProfessionDecl));
-                        break;
-                }
-                result.put(line, decls);
-            } catch (IOException ignored) {
+        lines.forEach(line -> {
+            List<PadegDto> decls = new ArrayList<>(6);
+            switch (declinationType) {
+                case FIO:
+                    decls.addAll(getDeclination(line, padegClient::getFioDecl));
+                    break;
+                case DEPARTMENT:
+                    decls.addAll(getDeclination(line, padegClient::getOfficeDecl));
+                    break;
+                case PROFESSION:
+                    decls.addAll(getDeclination(line, padegClient::getProfessionDecl));
+                    break;
             }
-        }
+            result.put(line, decls);
+        });
         return result;
     }
 

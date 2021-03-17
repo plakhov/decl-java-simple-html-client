@@ -9,5 +9,5 @@ import java.util.Map;
 public interface PadegService {
     List<PadegDto> getDeclination(String fio);
 
-    Map<String, List<PadegDto>> getDeclinationFromFile(String pathToFile, DeclinationType declinationType);
+    List<Map<String, List<PadegDto>>> getDeclinationFromFile(String pathToFile, DeclinationType declinationType, Integer quantityRepeat);
 }
